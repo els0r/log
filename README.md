@@ -6,13 +6,13 @@ This package supplies a thread-safe logger, a simple logging interface and commo
 
 * Console (Stdout/Stderr to terminal)
 * DevNull (does nothing)
+* JSON (logs JSON messages to Stdout)
 * Syslog (*TODO: coming soon*)
-* Json (*TODO: coming soon*)
 
 Quick Start
 ------------
 
-To use the logging interface do 
+To use the logging interface do
 
 ```
 go get github.com/els0r/log/...
@@ -28,10 +28,10 @@ import(
 
 func main() {
   l := log.New(WithLevel(log.INFO))
-  
+
   // Do someting
-  
+
   l.Infof("We have done %d things today", 10)
-  l.Err("This is an error")
+  l.Error("This is an error")
 }
 ```

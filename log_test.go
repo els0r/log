@@ -18,7 +18,7 @@ func TestStdoutLogger(t *testing.T) {
 		t.Fatalf("failed to instantiate console logger from string")
 	}
 
-	l, err = New(WithOutput(c))
+	l, err = New(WithLogger(c))
 	if err != nil {
 		t.Fatalf("failed to instantiate console logger")
 	}
@@ -30,8 +30,8 @@ func TestStdoutLogger(t *testing.T) {
 	l.Infof("Hello %d infof world", 2)
 	l.Warn("Hello warn world")
 	l.Warnf("Hello %d warn world", 3)
-	l.Err("Hello error world")
-	l.Errf("Hello %d error world", 4)
+	l.Error("Hello error world")
+	l.Errorf("Hello %d error world", 4)
 
 	l.Close()
 
@@ -58,7 +58,7 @@ func TestDevNullLogger(t *testing.T) {
 
 	l, err := NewDevNullLogger()
 	if err != nil {
-		t.Fatalf("failed to instantiate devnull logger via string identifier")
+		t.Fatalf("failed to instantiate devnull logger")
 
 	}
 
@@ -69,8 +69,28 @@ func TestDevNullLogger(t *testing.T) {
 	l.Infof("Hello %d infof world", 2)
 	l.Warn("Hello warn world")
 	l.Warnf("Hello %d warn world", 3)
-	l.Err("Hello error world")
-	l.Errf("Hello %d error world", 4)
+	l.Error("Hello error world")
+	l.Errorf("Hello %d error world", 4)
+
+	l.Close()
+}
+
+func TestJSONLogger(t *testing.T) {
+
+	l := NewJSONLogger()
+	if l == nil {
+		t.Fatalf("failed to instantiate JSON logger: logger is <nil>")
+	}
+
+	// call the common functions on the Debug
+	l.Debug("Hello debug world")
+	l.Debugf("Hello %d debugf world", 1)
+	l.Info("Hello info world")
+	l.Infof("Hello %d infof world", 2)
+	l.Warn("Hello warn world")
+	l.Warnf("Hello %d warn world", 3)
+	l.Error("Hello error world")
+	l.Errorf("Hello %d error world", 4)
 
 	l.Close()
 }

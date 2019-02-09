@@ -25,8 +25,8 @@ func NewConsoleLogger() (*ConsoleLogger, error) {
 }
 
 // Debug prints messages with level DEBUG to Stdout
-func (c *ConsoleLogger) Debug(msg string) {
-	c.Debugf("%s", msg)
+func (c *ConsoleLogger) Debug(args ...interface{}) {
+	c.Debugf("%s", fmt.Sprint(args...))
 }
 
 // Debugf is formatted Debug
@@ -34,19 +34,19 @@ func (c *ConsoleLogger) Debugf(format string, args ...interface{}) {
 	c.writeLine(os.Stdout, debugPrefix, fmt.Sprintf(format, args...))
 }
 
-// Err prints messages with level ERR to Stderr
-func (c *ConsoleLogger) Err(msg string) {
-	c.Errf("%s", msg)
+// Error prints messages with level ERR to Stderr
+func (c *ConsoleLogger) Error(args ...interface{}) {
+	c.Errorf("%s", fmt.Sprint(args...))
 }
 
-// Errf is formatted Err
-func (c *ConsoleLogger) Errf(format string, args ...interface{}) {
+// Errorf is formatted Error
+func (c *ConsoleLogger) Errorf(format string, args ...interface{}) {
 	c.writeLine(os.Stderr, errPrefix, fmt.Sprintf(format, args...))
 }
 
 // Info prints messages with level INFO to Stdout
-func (c *ConsoleLogger) Info(msg string) {
-	c.Infof("%s", msg)
+func (c *ConsoleLogger) Info(args ...interface{}) {
+	c.Infof("%s", fmt.Sprint(args...))
 }
 
 // Infof is formatted Info
@@ -55,8 +55,8 @@ func (c *ConsoleLogger) Infof(format string, args ...interface{}) {
 }
 
 // Warn prints messages with level WARN to Stderr
-func (c *ConsoleLogger) Warn(msg string) {
-	c.Warnf("%s", msg)
+func (c *ConsoleLogger) Warn(args ...interface{}) {
+	c.Warnf("%s", fmt.Sprint(args...))
 }
 
 // Warnf is formatted Warn

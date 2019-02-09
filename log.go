@@ -8,13 +8,13 @@ import (
 
 // Logger specifies the general interface for plugging in loggers from third-party logging packages
 type Logger interface {
-	Debug(msg string)
+	Debug(args ...interface{})
 	Debugf(format string, args ...interface{})
-	Err(msg string)
-	Errf(format string, args ...interface{})
-	Info(msg string)
+	Error(args ...interface{})
+	Errorf(format string, args ...interface{})
+	Info(args ...interface{})
 	Infof(format string, args ...interface{})
-	Warn(msg string)
+	Warn(args ...interface{})
 	Warnf(format string, args ...interface{})
 
 	Close() error // some logger implementations will need this
@@ -48,8 +48,10 @@ const (
 	// Console writes output to terminal
 	Console
 
-//	Syslog uses the standard syslog facilities for logging
-//	Json encodes the log messages as machine-readable json structures
+	//	Json encodes the log messages as machine-readable json structures
+	JSON
+
+	//	Syslog uses the standard syslog facilities for logging
 )
 
 // GetLoggerImplementation returns the enumeration value for a logger implementation provided as string. Both lower and upper case work. In case the string does not specify a valid implementation, 0 is returned.
@@ -93,14 +95,16 @@ func NewFromString(id string, opts ...Option) (*Log, error) {
 	// default level is info
 	l := &Log{level: INFO}
 
-	// call the constructor and look if the the implemenation is support
+	// call the constructor and look if implementation is supported
 	switch GetLoggerImplementation(id) {
 	case DevNull:
 		l.l, err = NewDevNullLogger()
 	case Console:
 		l.l, err = NewConsoleLogger()
-		// case Syslog:
+	// case Syslog:
 	//	l.l, err = NewSyslogLogger()
+	case JSON:
+		l.l = NewJSONLogger()
 	default:
 		return nil, fmt.Errorf("Unable to find logger implementation '%s'", id)
 	}
@@ -142,7 +146,7 @@ func New(opts ...Option) (*Log, error) {
 }
 
 // Debug prints messages on level DEBUG
-func (l *Log) Debug(msg string) {
+func (l *Log) Debug(args ...interface{}) {
 	l.Lock()
 	defer l.Unlock()
 
@@ -150,7 +154,7 @@ func (l *Log) Debug(msg string) {
 		return
 	}
 
-	l.l.Debug(msg)
+	l.l.Debug(args...)
 }
 
 // Debugf is formatted Debug
@@ -165,8 +169,8 @@ func (l *Log) Debugf(format string, args ...interface{}) {
 	l.l.Debugf(format, args...)
 }
 
-// Err prints messages on level ERROR
-func (l *Log) Err(msg string) {
+// Error prints messages on level ERROR
+func (l *Log) Error(args ...interface{}) {
 	l.Lock()
 	defer l.Unlock()
 
@@ -174,11 +178,11 @@ func (l *Log) Err(msg string) {
 		return
 	}
 
-	l.l.Err(msg)
+	l.l.Error(args...)
 }
 
-// Errf is formatted Err
-func (l *Log) Errf(format string, args ...interface{}) {
+// Errorf is formatted Error
+func (l *Log) Errorf(format string, args ...interface{}) {
 	l.Lock()
 	defer l.Unlock()
 
@@ -186,11 +190,11 @@ func (l *Log) Errf(format string, args ...interface{}) {
 		return
 	}
 
-	l.l.Errf(format, args...)
+	l.l.Errorf(format, args...)
 }
 
 // Info prints messages on level INFO
-func (l *Log) Info(msg string) {
+func (l *Log) Info(args ...interface{}) {
 	l.Lock()
 	defer l.Unlock()
 
@@ -198,7 +202,7 @@ func (l *Log) Info(msg string) {
 		return
 	}
 
-	l.l.Info(msg)
+	l.l.Info(args...)
 }
 
 // Infof is formatted Info
@@ -214,7 +218,7 @@ func (l *Log) Infof(format string, args ...interface{}) {
 }
 
 // Warn prints messages on level WARN
-func (l *Log) Warn(msg string) {
+func (l *Log) Warn(args ...interface{}) {
 	l.Lock()
 	defer l.Unlock()
 
@@ -222,7 +226,7 @@ func (l *Log) Warn(msg string) {
 		return
 	}
 
-	l.l.Warn(msg)
+	l.l.Warn(args...)
 }
 
 // Warnf is formatted Warn
@@ -251,6 +255,7 @@ const unknown = "UNKNOWN"
 var loggerFromStrings = map[string]LoggerImplementation{
 	"DEVNULL": DevNull,
 	"CONSOLE": Console,
+	"JSON":    JSON,
 	//	"SYSLOG":  Syslog,
 }
 
@@ -259,6 +264,7 @@ var loggerImplementationToStrings = [...]string{
 	unknown,
 	"DEVNULL",
 	"CONSOLE",
+	"JSON",
 	//"SYSLOG",
 }
 
@@ -282,9 +288,3 @@ var fromStrings = map[string]Level{
 func (l *Log) ignoreLine(level Level) bool {
 	return l.level < level
 }
-
-/*
-if level > l.level ignore
-if level == l.level print
-if level < l.level print
-*/

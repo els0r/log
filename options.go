@@ -5,8 +5,8 @@ import "fmt"
 // Option is any function operating on or modifying a Log object. A function with this signature can be passed to the constructors
 type Option func(*Log) error
 
-// WithOutput sets a logger to something other than the default output. If possible, the logging level of `out` is inherited
-func WithOutput(out Logger) Option {
+// WithLogger sets a logger to something other than the default output. If possible, the logging level of `out` is inherited
+func WithLogger(out Logger) Option {
 	return func(l *Log) error {
 
 		// do a type assertion to check if the Logger supports log levels. If so, inherit the log level
@@ -20,7 +20,7 @@ func WithOutput(out Logger) Option {
 }
 
 // WithLevel sets the log level of the logger
-func WithLevel(level Level) func(*Log) error {
+func WithLevel(level Level) Option {
 	return func(l *Log) error {
 		// check if level is in range
 		if !(ERR <= level && level <= DEBUG) {
