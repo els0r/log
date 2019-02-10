@@ -1,15 +1,21 @@
 package log
 
 import (
+	"bytes"
+	"os"
 	"testing"
 )
+
+type fileMock struct {
+	*bytes.Buffer
+}
 
 func TestStdoutLogger(t *testing.T) {
 
 	var (
 		err error
 		c   Logger
-		l   *Log
+		l   Logger
 	)
 
 	// test different instantiation methods
@@ -35,6 +41,23 @@ func TestStdoutLogger(t *testing.T) {
 
 	l.Close()
 
+	// now test writing to a "file"
+	f := fileMock{&bytes.Buffer{}}
+	l = NewTextLogger(
+		WithTextOutputRouting(f, os.Stderr),
+	)
+
+	l.Debug("Hello debug world")
+	l.Debugf("Hello %d debugf world", 1)
+	l.Info("Hello info world")
+	l.Infof("Hello %d infof world", 2)
+	l.Warn("Hello warn world")
+	l.Warnf("Hello %d warn world", 3)
+	l.Error("Hello error world")
+	l.Errorf("Hello %d error world", 4)
+
+	f.Reset()
+	l.Close()
 }
 
 func TestNewFromString(t *testing.T) {
@@ -56,11 +79,7 @@ func TestNewFromString(t *testing.T) {
 
 func TestDevNullLogger(t *testing.T) {
 
-	l, err := NewDevNullLogger()
-	if err != nil {
-		t.Fatalf("failed to instantiate devnull logger")
-
-	}
+	l := NewDevNullLogger()
 
 	// call the common functions on the Debug
 	l.Debug("Hello debug world")
@@ -77,7 +96,7 @@ func TestDevNullLogger(t *testing.T) {
 
 func TestJSONLogger(t *testing.T) {
 
-	l := NewJSONLogger()
+	l := NewJSONLogger(WithJSONOutputRouting(os.Stderr))
 	if l == nil {
 		t.Fatalf("failed to instantiate JSON logger: logger is <nil>")
 	}

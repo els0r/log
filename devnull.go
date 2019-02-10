@@ -4,8 +4,8 @@ package log
 type DevNullLogger struct{}
 
 // NewDevNullLogger creates a new DevNullLogger
-func NewDevNullLogger() (*DevNullLogger, error) {
-	return &DevNullLogger{}, nil
+func NewDevNullLogger() *DevNullLogger {
+	return &DevNullLogger{}
 }
 
 // Debug does nothing

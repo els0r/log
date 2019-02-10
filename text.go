@@ -25,14 +25,14 @@ var (
 type TextLoggerOption func(*TextLogger)
 
 // WithTextOutputRouting sets the destination for informational messages as well as for errors.
-func WithTextOutputRouting(info io.Writer, err io.Writer) TextLoggerOption {
+func WithTextOutputRouting(info, err io.Writer) TextLoggerOption {
 	return func(t *TextLogger) {
 		t.wOut, t.wErr = info, err
 	}
 }
 
 // NewTextLogger creates a new TextLogger.
-func NewTextLogger(opts ...TextLoggerOption) (*TextLogger, error) {
+func NewTextLogger(opts ...TextLoggerOption) *TextLogger {
 	t := &TextLogger{os.Stdout, os.Stderr}
 
 	// apply options
@@ -40,7 +40,7 @@ func NewTextLogger(opts ...TextLoggerOption) (*TextLogger, error) {
 		opt(t)
 	}
 
-	return t, nil
+	return t
 }
 
 // Debug prints messages with level DEBUG to Stdout
@@ -83,10 +83,12 @@ func (t *TextLogger) Warnf(format string, args ...interface{}) {
 	t.writeLine(t.wErr, warnPrefix, fmt.Sprintf(format, args...))
 }
 
-// helper function to filter out deselected criticality levels
+// helper function for printing
 func (t *TextLogger) writeLine(output io.Writer, prefix, msg string) {
 	fmt.Fprintf(output, "%s %s %s\n", prefix, time.Now().Local().Format("Mon Jan 2 15:04:05 2006"), msg)
 }
 
 // Close is a no-op function to fulfil the Logger interface
-func (t *TextLogger) Close() error { return nil }
+func (t *TextLogger) Close() error {
+	return nil
+}

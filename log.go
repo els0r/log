@@ -99,9 +99,9 @@ func NewFromString(id string, opts ...Option) (*Log, error) {
 	// call the constructor and look if implementation is supported
 	switch GetLoggerImplementation(id) {
 	case DevNull:
-		l.l, err = NewDevNullLogger()
+		l.l = NewDevNullLogger()
 	case Console:
-		l.l, err = NewTextLogger()
+		l.l = NewTextLogger()
 	case Syslog:
 		l.l, err = NewSyslogger()
 	case JSON:
@@ -129,11 +129,7 @@ func New(opts ...Option) (*Log, error) {
 	var err error
 
 	// by default, Log writes to the console with level INFO
-	l := &Log{level: INFO}
-	l.l, err = NewTextLogger()
-	if err != nil {
-		return nil, err
-	}
+	l := &Log{level: INFO, l: NewTextLogger()}
 
 	// apply options
 	for _, opt := range opts {
