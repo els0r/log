@@ -52,6 +52,7 @@ const (
 	JSON
 
 	//	Syslog uses the standard syslog facilities for logging
+	Syslog
 )
 
 // GetLoggerImplementation returns the enumeration value for a logger implementation provided as string. Both lower and upper case work. In case the string does not specify a valid implementation, 0 is returned.
@@ -100,9 +101,9 @@ func NewFromString(id string, opts ...Option) (*Log, error) {
 	case DevNull:
 		l.l, err = NewDevNullLogger()
 	case Console:
-		l.l, err = NewConsoleLogger()
-	// case Syslog:
-	//	l.l, err = NewSyslogLogger()
+		l.l, err = NewTextLogger()
+	case Syslog:
+		l.l, err = NewSyslogger()
 	case JSON:
 		l.l = NewJSONLogger()
 	default:
@@ -129,7 +130,7 @@ func New(opts ...Option) (*Log, error) {
 
 	// by default, Log writes to the console with level INFO
 	l := &Log{level: INFO}
-	l.l, err = NewConsoleLogger()
+	l.l, err = NewTextLogger()
 	if err != nil {
 		return nil, err
 	}
@@ -256,7 +257,7 @@ var loggerFromStrings = map[string]LoggerImplementation{
 	"DEVNULL": DevNull,
 	"CONSOLE": Console,
 	"JSON":    JSON,
-	//	"SYSLOG":  Syslog,
+	"SYSLOG":  Syslog,
 }
 
 // helper for string method
@@ -265,7 +266,7 @@ var loggerImplementationToStrings = [...]string{
 	"DEVNULL",
 	"CONSOLE",
 	"JSON",
-	//"SYSLOG",
+	"SYSLOG",
 }
 
 // helper for string method

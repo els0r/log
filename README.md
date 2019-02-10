@@ -4,10 +4,10 @@ Simple logging interface and common loggers for injection into other packages
 
 This package supplies a thread-safe logger, a simple logging interface and commonly used logging destinations. Currently supported implementations are
 
-* Console (Stdout/Stderr to terminal)
+* Text (writes to Stdout/Stderr by default)
 * DevNull (does nothing)
-* JSON (logs JSON messages to Stdout)
-* Syslog (*TODO: coming soon*)
+* JSON (logs JSON messages to Stdout by default)
+* Syslog (logs messages to the local syslog facility)
 
 Quick Start
 ------------
