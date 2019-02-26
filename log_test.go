@@ -2,6 +2,7 @@ package log
 
 import (
 	"bytes"
+	"log/syslog"
 	"os"
 	"testing"
 )
@@ -75,6 +76,34 @@ func TestNewFromString(t *testing.T) {
 	if err == nil {
 		t.Fatalf("expected error for invalid logger implementation identifer")
 	}
+}
+
+func TestSyslogLogger(t *testing.T) {
+
+	id := "syslog"
+
+	l, err := NewSyslogger(WithSyslogPriority(syslog.LOG_DEBUG), WithSyslogTag("syslog_test"))
+	if err != nil {
+		t.Fatalf("failed to instantiate %s logger via string identifier", id)
+	}
+
+	l.Debug("Hello debug world")
+	l.Debugf("Hello %d debugf world", 1)
+	l.Info("Hello info world")
+	l.Infof("Hello %d infof world", 2)
+	l.Warn("Hello warn world")
+	l.Warnf("Hello %d warn world", 3)
+	l.Error("Hello error world")
+	l.Errorf("Hello %d error world", 4)
+
+	err = l.Close()
+	if err != nil {
+		t.Fatalf("failed to close %s logger", id)
+	}
+
+	l.Debug("Hello again world")
+	l.Debugf("Hello %d again debugf world", 1)
+
 }
 
 func TestDevNullLogger(t *testing.T) {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/syslog"
 	"os"
+	"path/filepath"
 )
 
 // Syslogger implements the Logger interface for Syslog
@@ -36,7 +37,7 @@ func WithSyslogTag(tag string) SyslogOption {
 func NewSyslogger(opts ...SyslogOption) (*Syslogger, error) {
 	var (
 		err error
-		s   = &Syslogger{prio: syslog.LOG_DEBUG, tag: os.Args[0]} // the chattiest priority is taken as the overlying logger will control severity levels. If the logger is used standalone, the option should be used to set the priority
+		s   = &Syslogger{prio: syslog.LOG_DEBUG, tag: filepath.Base(os.Args[0])} // the chattiest priority is taken as the overlying logger will control severity levels. If the logger is used standalone, the option should be used to set the priority
 	)
 
 	// open new syslog writer
