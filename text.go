@@ -12,6 +12,7 @@ import (
 // TextLogger provides logging facilities to standard out and standard err. By default, anything >= Info is written to Stdout, anything below to Stderr. Other destinations can be set via the logger's options.
 type TextLogger struct {
 	wOut, wErr io.Writer // message routing for info and error messages
+	short      bool
 }
 
 var (
@@ -31,9 +32,15 @@ func WithTextOutputRouting(info, err io.Writer) TextLoggerOption {
 	}
 }
 
+func WithTextPlainOutput() TextLoggerOption {
+	return func(t *TextLogger) {
+		t.short = true
+	}
+}
+
 // NewTextLogger creates a new TextLogger.
 func NewTextLogger(opts ...TextLoggerOption) *TextLogger {
-	t := &TextLogger{os.Stdout, os.Stderr}
+	t := &TextLogger{wOut: os.Stdout, wErr: os.Stderr}
 
 	// apply options
 	for _, opt := range opts {
@@ -85,6 +92,10 @@ func (t *TextLogger) Warnf(format string, args ...interface{}) {
 
 // helper function for printing
 func (t *TextLogger) writeLine(output io.Writer, prefix, msg string) {
+	if t.short {
+		fmt.Fprintf(output, "%s\n", msg)
+		return
+	}
 	fmt.Fprintf(output, "%s %s %s\n", prefix, time.Now().Local().Format("Mon Jan 2 15:04:05 2006"), msg)
 }
 
